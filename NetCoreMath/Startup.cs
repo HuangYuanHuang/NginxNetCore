@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Hangfire;
 
 namespace NetCoreMath
 {
@@ -24,6 +25,7 @@ namespace NetCoreMath
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddHangfire(x => x.UseActivator("<connection string>"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,7 +35,8 @@ namespace NetCoreMath
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
             app.UseMvc();
         }
     }

@@ -7,5 +7,9 @@ namespace NetCoreSignalr.SignalrHub
 {
     public class MessageHub : Hub
     {
+        public void SendMessage(string time,string message,int task)
+        {
+            Clients.All.InvokeAsync("pushMessage", time, message,task);
+        }
     }
 }

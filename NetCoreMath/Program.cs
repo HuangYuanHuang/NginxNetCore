@@ -14,12 +14,18 @@ namespace NetCoreMath
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            var conf = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile("appsettings.Development.json", true, true)
+                .Build();
+            BuildWebHost(args, conf).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
+        public static IWebHost BuildWebHost(string[] args, IConfiguration config) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseConfiguration(config)
                 .Build();
     }
 }

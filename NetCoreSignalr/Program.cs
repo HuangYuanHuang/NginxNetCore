@@ -19,6 +19,7 @@ namespace NetCoreSignalr
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                 .UseUrls("http://*:51420")
                 .UseStartup<Startup>()
                 .Build();
     }

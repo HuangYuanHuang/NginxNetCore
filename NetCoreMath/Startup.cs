@@ -60,7 +60,7 @@ namespace NetCoreMath
 
 
             app.UseMvc();
-            BackgroundJob.Enqueue<IMathCoreService>(d => d.Start());
+          
             RecurringJob.AddOrUpdate<IMathCoreService>(d => d.Excute(), Cron.MinuteInterval(1));
 
         }

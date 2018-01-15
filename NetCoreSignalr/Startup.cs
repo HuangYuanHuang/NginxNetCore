@@ -42,12 +42,14 @@ namespace NetCoreSignalr
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            app.UseCors(d => d.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
             app.UseStaticFiles();
             app.UseSignalR(routes =>
             {
                 routes.MapHub<MessageHub>("messageHub");
             });
+          
+       
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

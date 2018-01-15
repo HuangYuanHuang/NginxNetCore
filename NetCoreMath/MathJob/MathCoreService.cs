@@ -35,25 +35,34 @@ namespace NetCoreMath.MathJob
             loggerFactory = new LoggerFactory();
             hub = new HubConnection(connection, protocol, loggerFactory);
 
+
         }
+        public bool isStart = false;
+
 
         public async Task Start()
         {
             await hub.StartAsync();
+
         }
         public async void Excute()
         {
+
             if (blockingCollection.Count > 0)
             {
                 try
                 {
-
-                   await hub.InvokeAsync(appConfig.SignalrConfig.MethodName, DateTime.Now.ToString(), $"{hostName}正在执行计算服务!任务数量：{blockingCollection.Count}", taskId);
+                    if (!isStart)
+                    {
+                        await Start();
+                        isStart = true;
+                    }
+                    await hub.InvokeAsync(appConfig.SignalrConfig.MethodName, DateTime.Now.ToString(), $"{hostName}正在执行计算服务!任务数量：{blockingCollection.Count}", taskId);
                     while (blockingCollection.Count > 0)
                     {
                         int temp = 0;
                         blockingCollection.TryTake(out temp);
-                       await Task.Delay(100);
+                        await Task.Delay(10);
 
                     }
                     await hub.InvokeAsync(appConfig.SignalrConfig.MethodName, DateTime.Now.ToString(), $"{hostName}完成计算服务!", taskId++);

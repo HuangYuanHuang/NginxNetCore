@@ -11,6 +11,8 @@ using Microsoft.Extensions.Options;
 using Hangfire;
 using Hangfire.Mongo;
 using NetCoreMath.MathJob;
+using Hangfire.Dashboard;
+using Hangfire.Annotations;
 
 namespace NetCoreMath
 {
@@ -56,13 +58,26 @@ namespace NetCoreMath
                 app.UseDeveloperExceptionPage();
             }
             app.UseHangfireServer();
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+            {
+                Authorization = new[] { new CustomAuthorizeFilter() }
+            });
 
 
             app.UseMvc();
           
             RecurringJob.AddOrUpdate<IMathCoreService>(d => d.Excute(), Cron.MinuteInterval(1));
 
+        }
+    }
+
+    public class CustomAuthorizeFilter : IDashboardAuthorizationFilter
+    {
+        public bool Authorize([NotNull] DashboardContext context)
+        {
+            //var httpcontext = context.GetHttpContext();
+            //return httpcontext.User.Identity.IsAuthenticated;
+            return true;
         }
     }
 }

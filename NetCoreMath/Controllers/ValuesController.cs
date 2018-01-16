@@ -31,7 +31,8 @@ namespace NetCoreMath.Controllers
             {
                 MathCoreService.blockingCollection.Add(i);
             }
-            return new { Serive = hostName ,Message=$"服务器收到 {id} 个计算服务 "};
+            Console.WriteLine($"{hostName}-{DateTime.Now}服务器 【收到】 {id} 个计算服务，等待任务队列执行...");
+            return new { Serive = hostName, Message = $"服务器收到 {id} 个计算服务 " };
         }
 
         // POST api/values

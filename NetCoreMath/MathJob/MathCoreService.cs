@@ -25,7 +25,7 @@ namespace NetCoreMath.MathJob
         AppConfig appConfig;
         HubConnection hub;
         string hostName;
-        int taskId = 0;
+       static int taskId = 0;
         public MathCoreService(IOptions<AppConfig> setting)
         {
             appConfig = setting.Value;
@@ -33,7 +33,7 @@ namespace NetCoreMath.MathJob
             connection = new HttpConnection(new Uri(appConfig.SignalrConfig.Url));
             protocol = new JsonHubProtocol();
             loggerFactory = new LoggerFactory();
-            hub = new HubConnection(connection, protocol, loggerFactory);
+          //  hub = new HubConnection(connection, protocol, loggerFactory);
 
 
         }
@@ -52,12 +52,13 @@ namespace NetCoreMath.MathJob
             {
                 try
                 {
-                    if (!isStart)
-                    {
-                        await Start();
-                        isStart = true;
-                    }
-                    await hub.InvokeAsync(appConfig.SignalrConfig.MethodName, DateTime.Now.ToString(), $"{hostName}正在执行计算服务!任务数量：{blockingCollection.Count}", taskId);
+                    //if (!isStart)
+                    //{
+                    //    await Start();
+                    //    isStart = true;
+                    //}
+                    //await hub.InvokeAsync(appConfig.SignalrConfig.MethodName, DateTime.Now.ToString(), $"{hostName}正在执行计算服务!任务数量：{blockingCollection.Count}", taskId);
+                    Console.WriteLine($"{hostName}-{DateTime.Now}【正在执行】计算服务!任务数量：{blockingCollection.Count} 任务ID:{taskId}");
                     while (blockingCollection.Count > 0)
                     {
                         int temp = 0;
@@ -65,16 +66,23 @@ namespace NetCoreMath.MathJob
                         await Task.Delay(10);
 
                     }
-                    await hub.InvokeAsync(appConfig.SignalrConfig.MethodName, DateTime.Now.ToString(), $"{hostName}完成计算服务!", taskId++);
+                    Console.WriteLine($"{hostName}-{DateTime.Now}【结束】计算服务!任务数量：{blockingCollection.Count} 任务ID:{taskId}");
+                   // await hub.InvokeAsync(appConfig.SignalrConfig.MethodName, DateTime.Now.ToString(), $"{hostName}完成计算服务!", taskId++);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    while (blockingCollection.Count > 0)
+                    {
+                        int temp = 0;
+                        blockingCollection.TryTake(out temp);
 
 
+                    }
+                    Console.WriteLine($"{DateTime.Now} {ex.Message}");
                 }
             }
-
-            Console.WriteLine($"{DateTime.Now} 正在执行定时job");
+            taskId++;
+            Console.WriteLine($"{hostName}-{DateTime.Now} 【等待】执行任务队列");
         }
     }
 }
